@@ -1,5 +1,5 @@
 ---
-const base = import.meta.env.BASE_URL;
+import { withBase } from '../utils/paths';
 ---
 
 <section class="hero">
@@ -14,14 +14,14 @@ const base = import.meta.env.BASE_URL;
       This site brings the notes, breakdowns, and experiments from my old blog into one updated home.
     </p>
     <div class="hero-buttons">
-      <a href={`${base}blog/`} class="btn btn-primary">
+      <a href={withBase('/blog/')} class="btn btn-primary">
         <span>Read the Blog</span>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="5" y1="12" x2="19" y2="12"></line>
           <polyline points="12 5 19 12 12 19"></polyline>
         </svg>
       </a>
-      <a href={`${base}about/`} class="btn btn-secondary">
+      <a href={withBase('/about/')} class="btn btn-secondary">
         <span>About Pavel</span>
       </a>
     </div>

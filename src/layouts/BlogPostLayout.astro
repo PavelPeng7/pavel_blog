@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import ThreeBackground from '../components/ThreeBackground.astro';
 import Navigation from '../components/Navigation.astro';
+import { withBase } from '../utils/paths';
 
 interface Props {
   title: string;
@@ -11,7 +12,6 @@ interface Props {
   tags?: string[] | undefined;
 }
 
-const base = import.meta.env.BASE_URL;
 const { title, description, pubDate, updatedDate, tags } = Astro.props;
 
 const formattedPubDate = pubDate.toLocaleDateString('en-US', {
@@ -34,7 +34,7 @@ const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-US', {
   <article class="blog-post">
     <div class="container">
       <header class="post-header">
-        <a href={`${base}blog/`} class="back-link">← Back to Blog</a>
+        <a href={withBase('/blog/')} class="back-link">Back to Blog</a>
         <h1 class="post-title shimmer-text">{title}</h1>
         <div class="post-meta">
           <time class="post-date">{formattedPubDate}</time>

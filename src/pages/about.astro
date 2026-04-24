@@ -2,8 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ThreeBackground from '../components/ThreeBackground.astro';
 import Navigation from '../components/Navigation.astro';
+import { withBase } from '../utils/paths';
 
-const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout title="About | Pavel's Blog" description="About Pavel and the work behind the blog">
@@ -17,7 +17,7 @@ const base = import.meta.env.BASE_URL;
       <div class="content-grid">
         <section class="content-section intro-section">
           <div class="intro-layout">
-            <img class="profile-photo" src={`${base}img/nuo-cat.jpg`} alt="Pavel profile" loading="lazy" />
+            <img class="profile-photo" src={withBase('/img/nuo-cat.jpg')} alt="Pavel profile" loading="lazy" />
             <div class="intro-copy">
               <h2>Hello, I'm Pavel</h2>
               <p>
@@ -101,7 +101,7 @@ const base = import.meta.env.BASE_URL;
           <h2>Let's Connect</h2>
           <p>Browse the migrated posts or follow the work on GitHub.</p>
           <div class="contact-buttons">
-            <a href={`${base}blog/`} class="btn btn-primary">
+            <a href={withBase('/blog/')} class="btn btn-primary">
               Read the Blog
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
