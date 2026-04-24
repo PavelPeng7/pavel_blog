@@ -3,9 +3,9 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   site: 'https://kpab.github.io',
-  base: '/astro-darkness',
+  base: command === 'dev' ? '/' : '/astro-darkness',
   trailingSlash: 'always',
   integrations: [mdx(), sitemap()],
-});
+}));

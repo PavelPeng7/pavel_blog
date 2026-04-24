@@ -33,6 +33,37 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
   };
 
+  function createDotTexture() {
+    const size = 64;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+
+    const context = canvas.getContext('2d');
+    if (!context) {
+      return null;
+    }
+
+    const center = size / 2;
+    const radius = size * 0.28;
+
+    context.clearRect(0, 0, size, size);
+
+    const gradient = context.createRadialGradient(center, center, 0, center, center, radius);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    gradient.addColorStop(0.75, 'rgba(255, 255, 255, 0.95)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+    context.fillStyle = gradient;
+    context.beginPath();
+    context.arc(center, center, radius, 0, Math.PI * 2);
+    context.fill();
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    return texture;
+  }
+
   // Three.jsアニメーションの初期化
   function initThreeAnimation() {
     const canvas = document.getElementById('three-canvas') as HTMLCanvasElement;
@@ -86,12 +117,16 @@
     particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
 
     // パーティクル用マテリアル
+    const dotTexture = createDotTexture();
     const particlesMaterial = new THREE.PointsMaterial({
       size: 0.15,
       vertexColors: true,
       transparent: true,
       opacity: 0.8,
       blending: THREE.AdditiveBlending,
+      map: dotTexture,
+      alphaMap: dotTexture,
+      depthWrite: false,
     });
 
     particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
@@ -172,6 +207,8 @@
     // Three.jsオブジェクトのクリーンアップ
     if (particlesMesh) {
       particlesMesh.geometry.dispose();
+      particlesMesh.material.map?.dispose();
+      particlesMesh.material.alphaMap?.dispose();
       particlesMesh.material.dispose();
       particlesMesh = null;
     }

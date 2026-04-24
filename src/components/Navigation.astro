@@ -1,31 +1,28 @@
 ---
-// Navigation component - Floating navbar with SVG icons
 const base = import.meta.env.BASE_URL;
 const currentPath = Astro.url.pathname;
-// BASE_URLを除いたパスで比較
 const relativePath = currentPath.replace(base.slice(0, -1), '') || '/';
 ---
 
 <nav class="nav">
   <div class="nav-container">
-    <a href={base} class="logo">DARKNESS</a>
+    <a href={base} class="logo">PAVEL</a>
 
     <div class="nav-links">
       <a href={base} class:list={['nav-link', { active: relativePath === '/' }]}>
         Home
       </a>
-      <a href={`${base}blog`} class:list={['nav-link', { active: relativePath.startsWith('/blog') }]}>
+      <a href={`${base}blog/`} class:list={['nav-link', { active: relativePath.startsWith('/blog') }]}>
         Blog
       </a>
-      <a href={`${base}projects`} class:list={['nav-link', { active: relativePath === '/projects' }]}>
-        Projects
+      <a href={`${base}tags/`} class:list={['nav-link', { active: relativePath === '/tags/' || relativePath === '/tags' }]}>
+        Tags
       </a>
-      <a href={`${base}about`} class:list={['nav-link', { active: relativePath === '/about' }]}>
+      <a href={`${base}about/`} class:list={['nav-link', { active: relativePath === '/about/' || relativePath === '/about' }]}>
         About
       </a>
     </div>
 
-    <!-- Mobile menu button -->
     <button class="mobile-menu-btn" aria-label="Toggle menu" id="mobile-menu-btn">
       <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -36,13 +33,12 @@ const relativePath = currentPath.replace(base.slice(0, -1), '') || '/';
   </div>
 </nav>
 
-<!-- Mobile menu overlay -->
 <div class="mobile-menu" id="mobile-menu">
   <div class="mobile-menu-content">
     <a href={base} class:list={['mobile-nav-link', { active: relativePath === '/' }]}>Home</a>
-    <a href={`${base}blog`} class:list={['mobile-nav-link', { active: relativePath.startsWith('/blog') }]}>Blog</a>
-    <a href={`${base}projects`} class:list={['mobile-nav-link', { active: relativePath === '/projects' }]}>Projects</a>
-    <a href={`${base}about`} class:list={['mobile-nav-link', { active: relativePath === '/about' }]}>About</a>
+    <a href={`${base}blog/`} class:list={['mobile-nav-link', { active: relativePath.startsWith('/blog') }]}>Blog</a>
+    <a href={`${base}tags/`} class:list={['mobile-nav-link', { active: relativePath === '/tags/' || relativePath === '/tags' }]}>Tags</a>
+    <a href={`${base}about/`} class:list={['mobile-nav-link', { active: relativePath === '/about/' || relativePath === '/about' }]}>About</a>
   </div>
 </div>
 
@@ -222,9 +218,8 @@ const relativePath = currentPath.replace(base.slice(0, -1), '') || '/';
         mobileMenu.classList.toggle('open');
       });
 
-      // Close menu when clicking a link
       const mobileLinks = mobileMenu.querySelectorAll('.mobile-nav-link');
-      mobileLinks.forEach(link => {
+      mobileLinks.forEach((link) => {
         link.addEventListener('click', () => {
           mobileMenu.classList.remove('open');
         });

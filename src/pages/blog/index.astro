@@ -9,11 +9,12 @@ const allBlogPosts = await getCollection('blog');
 const sortedPosts = allBlogPosts.sort((a, b) =>
   b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
+const postCount = sortedPosts.length;
 ---
 
 <BaseLayout
-  title="Blog - Darkness"
-  description="Articles about web development, Three.js, and dark design"
+  title="Blog | Pavel's Blog"
+  description="Unity, rendering, tools, and computer graphics notes from Pavel."
 >
   <ThreeBackground />
   <Navigation />
@@ -23,7 +24,7 @@ const sortedPosts = allBlogPosts.sort((a, b) =>
       <header class="blog-header">
         <h1 class="page-title">Blog</h1>
         <p class="page-subtitle">
-          Exploring the depths of web development, animations, and dark design
+          {postCount} migrated posts on Unity, shaders, tools, and computer graphics.
         </p>
       </header>
 

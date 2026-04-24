@@ -1,0 +1,217 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ThreeBackground from '../components/ThreeBackground.astro';
+import Navigation from '../components/Navigation.astro';
+
+const base = import.meta.env.BASE_URL;
+const allBlogPosts = await getCollection('blog');
+const sortedPosts = allBlogPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const tagMap = new Map<string, typeof sortedPosts>();
+
+for (const post of sortedPosts) {
+  for (const tag of post.data.tags ?? []) {
+    const existing = tagMap.get(tag) ?? [];
+    existing.push(post);
+    tagMap.set(tag, existing);
+  }
+}
+
+const tags = [...tagMap.entries()]
+  .map(([name, posts]) => ({ name, posts }))
+  .sort((a, b) => b.posts.length - a.posts.length || a.name.localeCompare(b.name, 'zh-Hans-CN'));
+---
+
+<BaseLayout title="Tags | Pavel's Blog" description="Browse migrated blog posts by tag.">
+  <ThreeBackground />
+  <Navigation />
+
+  <main class="tags-page">
+    <div class="container">
+      <header class="tags-header">
+        <h1 class="page-title">Tags</h1>
+        <p class="page-subtitle">Browse the migrated archive by topic, tool, and graphics subject.</p>
+      </header>
+
+      <section class="tag-cloud">
+        {tags.map((tag) => (
+          <a href={`#${encodeURIComponent(tag.name)}`} class="tag-chip">
+            {tag.name}
+            <span>{tag.posts.length}</span>
+          </a>
+        ))}
+      </section>
+
+      <section class="tag-groups">
+        {tags.map((tag) => (
+          <div class="tag-group" id={encodeURIComponent(tag.name)}>
+            <div class="group-header">
+              <h2>{tag.name}</h2>
+              <span>{tag.posts.length} posts</span>
+            </div>
+
+            <div class="group-posts">
+              {tag.posts.map((post) => (
+                <a class="post-row" href={`${base}blog/${post.id}/`}>
+                  <div class="post-copy">
+                    <h3>{post.data.title}</h3>
+                    <p>{post.data.description}</p>
+                  </div>
+                  <time>{post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</time>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+      </section>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .tags-page {
+    min-height: 100vh;
+    padding: calc(var(--nav-height) + 2rem) 2rem 5rem;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .tags-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .page-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--color-text);
+  }
+
+  .page-subtitle {
+    font-size: 1.1rem;
+    color: var(--color-text-dim);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+  }
+
+  .tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.95rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: rgba(59, 130, 246, 0.08);
+    color: var(--color-text);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .tag-chip:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .tag-chip span {
+    color: var(--color-text-dim);
+    font-size: 0.85rem;
+  }
+
+  .tag-groups {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .tag-group {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+  }
+
+  .group-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .group-header h2 {
+    margin: 0;
+    color: var(--color-primary);
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+  }
+
+  .group-header span {
+    color: var(--color-text-dim);
+    font-size: 0.9rem;
+  }
+
+  .group-posts {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .post-row {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+    background: rgba(59, 130, 246, 0.04);
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .post-row:hover {
+    border-color: var(--color-primary);
+    background: rgba(59, 130, 246, 0.08);
+  }
+
+  .post-copy h3 {
+    margin: 0 0 0.35rem;
+    color: var(--color-text);
+    font-size: 1.05rem;
+  }
+
+  .post-copy p {
+    margin: 0;
+    color: var(--color-text-dim);
+    line-height: 1.6;
+  }
+
+  .post-row time {
+    white-space: nowrap;
+    color: var(--color-text-dim);
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 768px) {
+    .tags-page {
+      padding: calc(var(--nav-height) + 1rem) 1.5rem 4rem;
+    }
+
+    .post-row {
+      flex-direction: column;
+    }
+  }
+</style>
