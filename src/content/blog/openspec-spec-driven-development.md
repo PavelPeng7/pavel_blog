@@ -59,6 +59,8 @@ AI 根据审核通过的 Spec 文档生成代码。由于需求已经被精确�
 ### 4. Archive（归档）
 变更实施完成后，将 `changes/` 下的提案合并更新到 `specs/` 目录，同时归档本次变更记录，确保系统规范始终与代码保持同步。
 
+![OpenSpec 四阶段工作流](/img/openspec-workflow-flow.png)
+
 ## 目录结构
 
 OpenSpec 使用 `openspec/` 目录作为所有规格文档的统一入口：
@@ -103,7 +105,7 @@ openspec/
 实测发现，Codex 对指令的匹配比较模糊，好处是不用死记硬背：
 
 - 提案：`/openspec-proposal`、`/proposal`、`/提案`
-- 实施：`/openspec-apply`、`/apply`、`/实现`
+- 实施：`/openspec-apply`、`/apply`、`实现`
 
 建议在项目初期就启用这一规范，而不是等到代码混乱后再补救。规范越早建立，后续的 AI 协作效率越高。
 
