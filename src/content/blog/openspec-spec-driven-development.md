@@ -100,12 +100,13 @@ openspec/
 
 ## 在 Codex 中的使用
 
-我在 Codex 中使用 OpenSpec 不需要手动安装任何工具，只需在 `AGENT.md` 中配置规则，Codex 会自动识别并应用。
+在 Codex 中使用 OpenSpec 不需要手动安装任何工具，只需在项目级或用户级的 `AGENT.md` 中加入遵守 OpenSpec 规范的规则，Codex 会自动识别并应用。
 
-实测发现，Codex 对指令的匹配比较模糊，好处是不用死记硬背：
+实测发现，Codex 对指令的匹配比较模糊，好处是记忆负担小，AI 还会主动引导你遵守规范：
 
-- 提案：`/openspec-proposal`、`/proposal`、`/提案`
-- 实施：`/openspec-apply`、`/apply`、`实现`
+- **提案**：`/openspec-proposal`、`/proposal`、`提案`
+- **实施**：`/openspec-apply`、`/apply`、`实现`
+- **归档**：`/openspec-archive`、`/archive`、`归档`
 
 建议在项目初期就启用这一规范，而不是等到代码混乱后再补救。规范越早建立，后续的 AI 协作效率越高。
 
