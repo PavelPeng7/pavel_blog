@@ -20,7 +20,7 @@ const {
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link rel="icon" type="image/png" href={withBase('/img/PPT_transparent_32x32.png')} />
     <meta name="generator" content={Astro.generator} />
     <!-- Google Fonts: Space Grotesk + DM Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -93,6 +93,14 @@ const {
         height: 4px;
         background: var(--color-accent-pink);
         border-radius: 50%;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        :global(*),
+        :global(*::before),
+        :global(*::after) {
+          cursor: none !important;
+        }
       }
 
       @media (hover: none), (pointer: coarse), (max-width: 768px) {
