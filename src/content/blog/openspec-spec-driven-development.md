@@ -1,5 +1,5 @@
 ---
-title: "OpenSpec 初体验：我给 AI Coding 加了一道"对齐层""
+title: 'OpenSpec 初体验：我给 AI Coding 加了一道"对齐层"'
 description: "用 OpenSpec 给 AI Coding 加一道'对齐层'的实践记录"
 pubDate: 2026-04-25
 heroImage: "/img/post-bg-openspec.jpg"
