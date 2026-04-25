@@ -59,11 +59,28 @@ const {
         border: 2px solid var(--color-accent-purple);
         border-radius: 50%;
         position: fixed;
+        top: 0;
+        left: 0;
         pointer-events: none;
         z-index: 9999;
-        transition: all 0.1s ease;
+        opacity: 0;
+        transition:
+          width 0.1s ease,
+          height 0.1s ease,
+          background-color 0.1s ease,
+          opacity 0.15s ease;
         transform: translate(-50%, -50%);
         mix-blend-mode: difference;
+      }
+
+      .cursor-follower.is-visible {
+        opacity: 1;
+      }
+
+      .cursor-follower.is-hovering {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(168, 85, 247, 0.2);
       }
 
       .cursor-follower::before {
@@ -77,31 +94,62 @@ const {
         background: var(--color-accent-pink);
         border-radius: 50%;
       }
+
+      @media (hover: none), (pointer: coarse), (max-width: 768px) {
+        .cursor-follower {
+          display: none;
+        }
+      }
     </style>
 
     <script>
-      // Custom cursor
-      const cursor = document.querySelector('.cursor-follower') as HTMLElement;
+      let cleanupCustomCursor: (() => void) | null = null;
 
-      document.addEventListener('mousemove', (e) => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-      });
+      function initCustomCursor() {
+        cleanupCustomCursor?.();
 
-      // Cursor expand on hover
-      const interactiveElements = document.querySelectorAll('a, button, .card');
-      interactiveElements.forEach(el => {
-        el.addEventListener('mouseenter', () => {
-          cursor.style.width = '40px';
-          cursor.style.height = '40px';
-          cursor.style.backgroundColor = 'rgba(168, 85, 247, 0.2)';
+        const cursor = document.querySelector('.cursor-follower') as HTMLElement | null;
+        const canUseCustomCursor = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+        if (!cursor || !canUseCustomCursor) {
+          return;
+        }
+
+        const handleMouseMove = (event: MouseEvent) => {
+          cursor.classList.add('is-visible');
+          cursor.style.left = `${event.clientX}px`;
+          cursor.style.top = `${event.clientY}px`;
+        };
+
+        const handleMouseEnter = () => {
+          cursor.classList.add('is-hovering');
+        };
+
+        const handleMouseLeave = () => {
+          cursor.classList.remove('is-hovering');
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+
+        const interactiveElements = document.querySelectorAll('a, button, .card');
+        interactiveElements.forEach((element) => {
+          element.addEventListener('mouseenter', handleMouseEnter);
+          element.addEventListener('mouseleave', handleMouseLeave);
         });
 
-        el.addEventListener('mouseleave', () => {
-          cursor.style.width = '20px';
-          cursor.style.height = '20px';
-          cursor.style.backgroundColor = 'transparent';
-        });
+        cleanupCustomCursor = () => {
+          document.removeEventListener('mousemove', handleMouseMove);
+          interactiveElements.forEach((element) => {
+            element.removeEventListener('mouseenter', handleMouseEnter);
+            element.removeEventListener('mouseleave', handleMouseLeave);
+          });
+          cursor.classList.remove('is-visible', 'is-hovering');
+        };
+      }
+
+      document.addEventListener('astro:page-load', initCustomCursor);
+      document.addEventListener('astro:before-preparation', () => {
+        cleanupCustomCursor?.();
       });
     </script>
   </body>
