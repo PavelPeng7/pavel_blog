@@ -40,6 +40,7 @@ const {
     data-lens-size={lensSize}
   >
     <img src={src} alt={alt} class={imgClass} loading={loading} />
+    <span class="image-magnifier__fallback" aria-hidden="true"></span>
     <canvas class="image-magnifier__shader" aria-hidden="true"></canvas>
   </span>
 )}
@@ -86,7 +87,35 @@ const {
     z-index: 3;
   }
 
+  .image-magnifier__fallback {
+    position: absolute;
+    left: var(--magnifier-x);
+    top: var(--magnifier-y);
+    width: var(--magnifier-size);
+    height: var(--magnifier-size);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.94);
+    transform-origin: center;
+    transition:
+      opacity 120ms ease,
+      transform 120ms ease;
+    background-repeat: no-repeat;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+      inset 0 10px 26px rgba(255, 255, 255, 0.16),
+      inset 0 -18px 28px rgba(2, 6, 23, 0.18);
+    filter: drop-shadow(0 18px 34px rgba(2, 6, 23, 0.42));
+    z-index: 2;
+  }
+
   .image-magnifier.is-magnifying.is-shader-ready .image-magnifier__shader {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .image-magnifier.is-magnifying.is-fallback-ready:not(.is-shader-ready) .image-magnifier__fallback {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
   }
@@ -161,6 +190,10 @@ const {
     }
 
     .image-magnifier__shader {
+      display: none;
+    }
+
+    .image-magnifier__fallback {
       display: none;
     }
   }
@@ -450,8 +483,12 @@ const {
         canvas.className = 'image-magnifier__shader';
         canvas.setAttribute('aria-hidden', 'true');
 
+        const fallback = document.createElement('span');
+        fallback.className = 'image-magnifier__fallback';
+        fallback.setAttribute('aria-hidden', 'true');
+
         image.parentNode?.insertBefore(wrapper, image);
-        wrapper.append(image, canvas);
+        wrapper.append(image, fallback, canvas);
       });
     });
   }
@@ -515,6 +552,7 @@ const {
     document.querySelectorAll<HTMLElement>('[data-image-magnifier]').forEach((wrapper) => {
       const image = wrapper.querySelector('img');
       const canvas = wrapper.querySelector<HTMLCanvasElement>('.image-magnifier__shader');
+      const fallback = wrapper.querySelector<HTMLElement>('.image-magnifier__fallback');
 
       if (!image || !canvas) {
         return;
@@ -523,6 +561,7 @@ const {
       const zoom = Number(wrapper.dataset.zoom ?? 2.2);
       const lensSize = Number(wrapper.dataset.lensSize ?? 156);
       let shaderRenderer: ShaderRenderer | null = null;
+      let shaderAttempted = false;
       wrapper.style.setProperty('--magnifier-size', `${lensSize}px`);
 
       const updateLens = (event: PointerEvent) => {
@@ -535,6 +574,12 @@ const {
         wrapper.style.setProperty('--magnifier-x', `${xPercent}%`);
         wrapper.style.setProperty('--magnifier-y', `${yPercent}%`);
 
+        if (fallback) {
+          fallback.style.backgroundImage = `url("${image.currentSrc || image.src}")`;
+          fallback.style.backgroundSize = `${rect.width * zoom}px ${rect.height * zoom}px`;
+          fallback.style.backgroundPosition = `${-(x * zoom - lensSize / 2)}px ${-(y * zoom - lensSize / 2)}px`;
+        }
+
         shaderRenderer?.render(x, y, rect, zoom);
       };
 
@@ -543,11 +588,14 @@ const {
           return;
         }
 
-        if (!shaderRenderer && image.complete && image.naturalWidth > 0) {
+        if (!shaderAttempted && image.complete && image.naturalWidth > 0) {
+          shaderAttempted = true;
           shaderRenderer = createShaderRenderer(canvas, image, lensSize);
 
           if (shaderRenderer) {
             wrapper.classList.add('is-shader-ready');
+          } else if (fallback) {
+            wrapper.classList.add('is-fallback-ready');
           }
         }
 
@@ -585,7 +633,7 @@ const {
         wrapper.removeEventListener('pointerleave', handlePointerLeave);
         wrapper.removeEventListener('click', handleClick);
         shaderRenderer?.dispose();
-        wrapper.classList.remove('is-magnifying', 'is-shader-ready');
+        wrapper.classList.remove('is-magnifying', 'is-shader-ready', 'is-fallback-ready');
       });
     });
 
