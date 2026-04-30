@@ -229,7 +229,7 @@ const {
     #define LAMBDA_B 450.0
     #define SPHERE_RADIUS 3.0
     #define RAY_SPREAD 1.0
-    #define THICKNESS 0.11
+    #define THICKNESS 0.05
 
     const float CAUCHY_A = 1.5046;
     const float CAUCHY_B = 4200.0;
@@ -299,13 +299,16 @@ const {
         vec3 entryPoint = rayOrigin + nearT * rayDir;
         vec3 entryNormal = getNormal(entryPoint);
 
+        float facing = clamp(dot(-rayDir, entryNormal), 0.0, 1.0);
+        float incidenceAngle = sqrt(max(1.0 - facing * facing, 0.0));
+
         float iorR = getIOR(LAMBDA_R);
         float iorG = getIOR(LAMBDA_G);
         float iorB = getIOR(LAMBDA_B);
 
-        vec2 uvR = backgroundUv + refractedOffset(rayDir, entryPoint, entryNormal, iorR);
-        vec2 uvG = backgroundUv + refractedOffset(rayDir, entryPoint, entryNormal, iorG);
-        vec2 uvB = backgroundUv + refractedOffset(rayDir, entryPoint, entryNormal, iorB);
+        vec2 uvR = backgroundUv + refractedOffset(rayDir, entryPoint, entryNormal, iorR) * incidenceAngle;
+        vec2 uvG = backgroundUv + refractedOffset(rayDir, entryPoint, entryNormal, iorG) * incidenceAngle;
+        vec2 uvB = backgroundUv + refractedOffset(rayDir, entryPoint, entryNormal, iorB) * incidenceAngle;
 
         vec3 refractedColor = vec3(
           texture2D(u_image, clamp(uvR, vec2(0.001), vec2(0.999))).r,
@@ -313,7 +316,6 @@ const {
           texture2D(u_image, clamp(uvB, vec2(0.001), vec2(0.999))).b
         );
 
-        float facing = clamp(dot(-rayDir, entryNormal), 0.0, 1.0);
         float fresnel = pow(1.0 - facing, 2.0);
         float rim = smoothstep(0.8, 1.0, dist);
         float innerRim = smoothstep(0.52, 0.92, dist) * (1.0 - smoothstep(0.94, 1.0, dist));
@@ -322,7 +324,6 @@ const {
         vec3 edgeTint = vec3(0.92, 0.97, 1.0);
 
         finalColor = refractedColor;
-        finalColor = mix(finalColor, baseColor, 0.18);
         finalColor += edgeTint * fresnel * 1.2;
         finalColor += edgeTint * rim * 0.0;
         finalColor += edgeTint * innerRim * 0.0;
