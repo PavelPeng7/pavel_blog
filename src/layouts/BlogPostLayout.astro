@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import ThreeBackground from '../components/ThreeBackground.astro';
 import Navigation from '../components/Navigation.astro';
+import ImageMagnifier from '../components/ImageMagnifier.astro';
 import { withBase } from '../utils/paths';
 
 interface Props {
@@ -54,6 +55,7 @@ const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-US', {
       <div class="post-content">
         <slot />
       </div>
+      <ImageMagnifier enhanceSelector=".post-content" zoom={2.25} lensSize={164} />
     </div>
   </article>
 </BaseLayout>
@@ -208,6 +210,22 @@ const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-US', {
   }
 
   .post-content :global(p > img:only-child) {
+    margin: 0 auto;
+  }
+
+  .post-content :global(.image-magnifier) {
+    width: fit-content;
+    max-width: 100%;
+    margin: 1.5rem auto;
+    border-radius: 0.75rem;
+  }
+
+  .post-content :global(.image-magnifier img) {
+    margin: 0;
+    border-radius: inherit;
+  }
+
+  .post-content :global(p > .image-magnifier:only-child) {
     margin: 0 auto;
   }
 
